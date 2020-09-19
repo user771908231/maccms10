@@ -399,13 +399,11 @@ class Collect extends Base {
 
         $config = config('maccms.collect');
         $config = $config['vod'];
-        $players = config('vodplayer');
-        $downers = config('voddowner');
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',',$config['filter']);
         $pse_name =  mac_txt_explain($config['namewords']);
+        $pse_rnd = explode('#',$config['words']);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
         foreach($data['data'] as $k=>$v){
@@ -472,7 +470,6 @@ class Collect extends Base {
                 $v['vod_plot_detail'] = (string)$v['vod_plot_detail'];
 
                 if(!empty($v['vod_plot_name'])){
-                    $v['vod_plot'] = 1;
                     $v['vod_plot_name'] = trim($v['vod_plot_name'],'$$$');
                 }
                 if(!empty($v['vod_plot_detail'])){
@@ -568,17 +565,6 @@ class Collect extends Base {
                 foreach($cj_play_from_arr as $kk=>$vv){
                     if(empty($vv)){
                         unset($cj_play_from_arr[$kk]);
-                        unset($cj_play_url_arr[$kk]);
-                        unset($cj_play_server_arr[$kk]);
-                        unset($cj_play_note_arr[$kk]);
-                        continue;
-                    }
-
-                    if(empty($players[$vv])){
-                        unset($cj_play_from_arr[$kk]);
-                        unset($cj_play_url_arr[$kk]);
-                        unset($cj_play_server_arr[$kk]);
-                        unset($cj_play_note_arr[$kk]);
                         continue;
                     }
 
@@ -598,19 +584,8 @@ class Collect extends Base {
                 foreach($cj_down_from_arr as $kk=>$vv){
                     if(empty($vv)){
                         unset($cj_down_from_arr[$kk]);
-                        unset($cj_down_url_arr[$kk]);
-                        unset($cj_down_server_arr[$kk]);
-                        unset($cj_down_note_arr[$kk]);
                         continue;
                     }
-                    if(empty($downers[$vv])){
-                        unset($cj_down_from_arr[$kk]);
-                        unset($cj_down_url_arr[$kk]);
-                        unset($cj_down_server_arr[$kk]);
-                        unset($cj_down_note_arr[$kk]);
-                        continue;
-                    }
-
                     $cj_down_url_arr[$kk] = rtrim($cj_down_url_arr[$kk]);
                     $cj_down_server_arr[$kk] = $cj_down_server_arr[$kk];
                     $cj_down_note_arr[$kk] = $cj_down_note_arr[$kk];
@@ -909,9 +884,8 @@ class Collect extends Base {
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_vod';
         if(ENTRANCE=='api'){
-            Cache::rm($key);
+            Cache::rm('collect_break_vod');
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->vod($param);
@@ -929,7 +903,7 @@ class Collect extends Base {
         }
         if($show==1) {
             if ($param['ac'] == 'cjsel') {
-                Cache::rm($key);
+                Cache::rm('collect_break_vod');
                 mac_echo("数据采集完成");
                 unset($param['ids']);
                 $param['ac'] = 'list';
@@ -942,7 +916,7 @@ class Collect extends Base {
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
             } else {
                 if ($data['page']['page'] >= $data['page']['pagecount']) {
-                    Cache::rm($key);
+                    Cache::rm('collect_break_vod');
                     mac_echo("数据采集完成");
                     unset($param['page'],$param['ids']);
                     $param['ac'] = 'list';
@@ -1038,10 +1012,9 @@ class Collect extends Base {
         $config = $config['art'];
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',',$config['filter']);
+        $pse_rnd = explode('#',$config['words']);
         $pse_syn = mac_txt_explain($config['thesaurus']);
-
 
         foreach($data['data'] as $k=>$v){
             $color='red';
@@ -1232,9 +1205,8 @@ class Collect extends Base {
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_art';
         if(ENTRANCE=='api'){
-            Cache::rm($key);
+            Cache::rm('collect_break_art');
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->art($param);
@@ -1253,7 +1225,7 @@ class Collect extends Base {
 
         if($show==1) {
             if ($param['ac'] == 'cjsel') {
-                Cache::rm($key);
+                Cache::rm('collect_break_art');
                 mac_echo("数据采集完成");
                 unset($param['ids']);
                 $param['ac'] = 'list';
@@ -1265,7 +1237,7 @@ class Collect extends Base {
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
             } else {
                 if ($data['page']['page'] >= $data['page']['pagecount']) {
-                    Cache::rm($key);
+                    Cache::rm('collect_break_art');
                     mac_echo("数据采集完成");
                     unset($param['page']);
                     $param['ac'] = 'list';
@@ -1360,8 +1332,8 @@ class Collect extends Base {
         $config = $config['actor'];
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',',$config['filter']);
+        $pse_rnd = explode('#',$config['words']);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
         foreach($data['data'] as $k=>$v){
@@ -1519,9 +1491,8 @@ class Collect extends Base {
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_actor';
         if(ENTRANCE=='api'){
-            Cache::rm($key);
+            Cache::rm('collect_break_actor');
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->actor($param);
@@ -1540,7 +1511,7 @@ class Collect extends Base {
 
         if($show==1) {
             if ($param['ac'] == 'cjsel') {
-                Cache::rm($key);
+                Cache::rm('collect_break_actor');
                 mac_echo("数据采集完成");
                 unset($param['ids']);
                 $param['ac'] = 'list';
@@ -1552,7 +1523,7 @@ class Collect extends Base {
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
             } else {
                 if ($data['page']['page'] >= $data['page']['pagecount']) {
-                    Cache::rm($key);
+                    Cache::rm('collect_break_actor');
                     mac_echo("数据采集完成");
                     unset($param['page']);
                     $param['ac'] = 'list';
@@ -1626,8 +1597,8 @@ class Collect extends Base {
         $config = config('maccms.collect');
         $config = $config['role'];
 
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',',$config['filter']);
+        $pse_rnd = explode('#',$config['words']);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
         foreach($data['data'] as $k=>$v){
@@ -1725,7 +1696,6 @@ class Collect extends Base {
 
                 if($blend===false){
                     $vod_info = model('Vod')->where($where2)->find();
-
                 }
                 else{
                     $vod_info = model('Vod')->where($where2)
@@ -1741,7 +1711,7 @@ class Collect extends Base {
                 }
                 else {
                     $v['role_rid'] = $vod_info['vod_id'];
-                    $where['role_rid'] = $vod_info['vod_id'];
+
                     $info = model('Role')->where($where)->find();
                     if (!$info) {
                         $tmp = $this->syncImages($config['pic'], $v['role_pic'], 'role');
@@ -1807,9 +1777,8 @@ class Collect extends Base {
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_role';
         if(ENTRANCE=='api'){
-            Cache::rm($key);
+            Cache::rm('collect_break_role');
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->role($param);
@@ -1828,7 +1797,7 @@ class Collect extends Base {
 
         if($show==1) {
             if ($param['ac'] == 'cjsel') {
-                Cache::rm($key);
+                Cache::rm('collect_break_role');
                 mac_echo("数据采集完成");
                 unset($param['ids']);
                 $param['ac'] = 'list';
@@ -1840,7 +1809,7 @@ class Collect extends Base {
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
             } else {
                 if ($data['page']['page'] >= $data['page']['pagecount']) {
-                    Cache::rm($key);
+                    Cache::rm('collect_break_role');
                     mac_echo("数据采集完成");
                     unset($param['page']);
                     $param['ac'] = 'list';
@@ -1935,8 +1904,8 @@ class Collect extends Base {
         $config = $config['website'];
 
         $type_list = model('Type')->getCache('type_list');
-        $filter_arr = explode(',',$config['filter']); $filter_arr = array_filter($filter_arr);
-        $pse_rnd = explode('#',$config['words']); $pse_rnd = array_filter($pse_rnd);
+        $filter_arr = explode(',',$config['filter']);
+        $pse_rnd = explode('#',$config['words']);
         $pse_syn = mac_txt_explain($config['thesaurus']);
 
         foreach($data['data'] as $k=>$v){
@@ -2092,9 +2061,8 @@ class Collect extends Base {
             }
         }
 
-        $key = $GLOBALS['config']['app']['cache_flag']. '_'.'collect_break_website';
         if(ENTRANCE=='api'){
-            Cache::rm($key);
+            Cache::rm('collect_break_website');
             if ($data['page']['page'] < $data['page']['pagecount']) {
                 $param['page'] = intval($data['page']['page']) + 1;
                 $res = $this->actor($param);
@@ -2113,7 +2081,7 @@ class Collect extends Base {
 
         if($show==1) {
             if ($param['ac'] == 'cjsel') {
-                Cache::rm($key);
+                Cache::rm('collect_break_website');
                 mac_echo("数据采集完成");
                 unset($param['ids']);
                 $param['ac'] = 'list';
@@ -2125,7 +2093,7 @@ class Collect extends Base {
                 mac_jump($url, $GLOBALS['config']['app']['collect_timespan']);
             } else {
                 if ($data['page']['page'] >= $data['page']['pagecount']) {
-                    Cache::rm($key);
+                    Cache::rm('collect_break_website');
                     mac_echo("数据采集完成");
                     unset($param['page']);
                     $param['ac'] = 'list';

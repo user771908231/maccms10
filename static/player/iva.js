@@ -1,4 +1,3 @@
-
 document.write('<script type="text/javascript" src="//cytroncdn.videojj.com/latest/cytron.core.js"></script>');
 
 MacPlayer.Html = '';
